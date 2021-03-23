@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Hathi Trust Catalog</Name>
+  <Author>IDS Project</Author>
+  <Version>2.0</Version>
+  <Active>True</Active>
+  <Type>Addon</Type>
+  <Description>This Addon does an ISBN or Title search.  ISBN will be run if one is available. Uses Chromium.</Description>
+  <Forms>
+    <Form>FormRequest</Form>
+  </Forms>
+  <Permissions />
+  <Settings>
+    <Setting name="AutoSearch" value="true" type="boolean">
+      <Description>Determines whether or not the search should be done automatically when the request is opened.</Description>
+    </Setting>
+  </Settings>
+  <Files>
+    <File>HathiTrust.lua</File>
+  </Files>
+</Configuration>
