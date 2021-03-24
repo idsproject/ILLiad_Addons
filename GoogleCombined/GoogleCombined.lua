@@ -71,7 +71,7 @@ function Init()
 			else
 				if settings.WhichGoogle=="Standard" then
 					GoogleSearch();
-				elseif GetFieldValue("Transaction", "RequestType") == "Loan" then
+				elseif settings.WhichGoogle=="Books" then
 					GoogleBookSearch();
 				else
 					GoogleScholarSearch();
