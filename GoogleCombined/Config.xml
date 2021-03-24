@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Google Combined</Name>
+  <Author>IDS Project</Author>
+  <Version>2.5</Version>
+  <Active>True</Active>
+  <Type>Addon</Type>
+  <Description>Search Google Scholar, Google Books and Google. </Description>
+  <Forms>
+    <Form>FormRequest</Form>
+  </Forms>
+  <Permissions />
+  <Settings>
+    <Setting name="AutoSearch" value="true" type="boolean">
+      <Description>Defines whether the search should be automatically performed when the form opens.</Description>
+    </Setting>
+    <Setting name="WhichGoogle" value="Books" type="string">
+      <Description>Determines which Google should be searched automatically.  The options at Books, Scholar, and Standard.</Description>
+    </Setting>
+    <Setting name="Article" value="true" type="string">
+      <Description>Determines if Scholar should be selected for Articles and Books for books.  Will override WhichGoogle setting if either Books or Scholar is chosen.</Description>
+    </Setting>
+  </Settings>
+  <Files>
+    <File>GoogleCombined.lua</File>
+  </Files>
+</Configuration>
