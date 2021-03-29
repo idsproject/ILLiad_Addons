@@ -1,11 +1,14 @@
--- About GoogleCombined.lua (version 2.5, 3/24/2021)
+-- About GoogleCombined.lua (version 2.6, 3/29/2021)
 -- Author:  Mark Sullivan, SUNY Geneseo, IDS Project, sullivm@geneseo.edu
 -- GoogleCombined.lua does a search of Google, Google Books and Google Scholar.  Current URL is in the textbox at the top of the Addon for easy cut & paste.
 -- 
 -- autoSearch (boolean) determines whether the search is performed automatically when a request is opened or not.
 -- New version uses Chromium for better stability
 
-
+-- Load the .NET System Assembly
+luanet.load_assembly("System");
+Types = {};
+Types["Process"] = luanet.import_type("System.Diagnostics.Process");
 local settings = {};
 settings.AutoSearch = GetSetting("AutoSearch");
 settings.WhichGoogle = GetSetting("WhichGoogle");
@@ -30,8 +33,6 @@ function Init()
  
         -- Create a form
         SearchForm.Form = interfaceMngr:CreateForm("Google Search", "Script");
-		-- Add a text field for the URL
-		SearchForm.URLBox= SearchForm.Form:CreateTextEdit("URL:", "URL");
         -- Add a browser
         SearchForm.Browser = SearchForm.Form:CreateBrowser("Google Search", "Google Search Browser", "Google Search", "Chromium");
         -- Hide the text label
@@ -46,6 +47,7 @@ function Init()
         SearchForm.Google= SearchForm.RibbonPage:CreateButton("Search Google", GetClientImage("Search32"), "GoogleSearch", "Google Combined Search");
         SearchForm.GoogleScholar= SearchForm.RibbonPage:CreateButton("Search Google Scholar", GetClientImage("Search32"), "GoogleScholarSearch", "Google Combined Search");
         SearchForm.GoogleBooks= SearchForm.RibbonPage:CreateButton("Search Google Books", GetClientImage("Search32"), "GoogleBookSearch", "Google Combined Search");
+		SearchForm.RibbonPage:CreateButton("Open New Browser", GetClientImage("Web32"), "OpenInDefaultBrowser", "Utility");
 
         -- Hide buttons for Loan/Article
         if GetFieldValue("Transaction", "RequestType") == "Loan" then
@@ -85,18 +87,27 @@ end
 function GoogleScholarSearch()
 	SearchForm.Browser:RegisterPageHandler("custom", "URLChanged", "URLSet", true);
 	SearchForm.Browser:Navigate("http://scholar.google.com/scholar?q=" .. AtlasHelpers.UrlEncode(settings.SearchText));
-	SearchForm.URLBox.Value="http://scholar.google.com/scholar?q=" .. AtlasHelpers.UrlEncode(settings.SearchText);
 end
 
 function GoogleBookSearch()
 	SearchForm.Browser:RegisterPageHandler("custom", "URLChanged", "URLSet", true);
 	SearchForm.Browser:Navigate("http://books.google.com/books?q=" .. AtlasHelpers.UrlEncode(settings.SearchText));
-	SearchForm.URLBox.Value="http://books.google.com/books?q=" .. AtlasHelpers.UrlEncode(settings.SearchText);
 end
 
 function GoogleSearch()
 	SearchForm.Browser:RegisterPageHandler("custom", "URLChanged", "URLSet", true);
 	SearchForm.Browser:Navigate("http://google.com/search?q=" .. AtlasHelpers.UrlEncode(settings.SearchText));
-	SearchForm.URLBox.Value="http://google.com/search?q=" .. AtlasHelpers.UrlEncode(settings.SearchText);
 end
- 
+
+function OpenInDefaultBrowser()
+	local currentUrl = SearchForm.Browser.Address;
+	
+	if (currentUrl and currentUrl ~= "")then
+		LogDebug("Opening Browser URL in default browser: " .. currentUrl);
+
+		local process = Types["Process"]();
+		process.StartInfo.FileName = currentUrl;
+		process.StartInfo.UseShellExecute = true;
+		process:Start();
+	end
+end
