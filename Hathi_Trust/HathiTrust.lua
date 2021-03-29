@@ -8,7 +8,10 @@
 -- autoSearch (boolean) determines whether the search is performed automatically when a request is opened or not.
 --
 
-
+-- Load the .NET System Assembly
+luanet.load_assembly("System");
+Types = {};
+Types["Process"] = luanet.import_type("System.Diagnostics.Process");
 local settings = {};
 -- set scriptActive to true for this script to run, false to stop it from running.
 settings.scriptActive = GetSetting("Active");
@@ -26,7 +29,7 @@ function Init()
 	if settings.scriptActive then
 
 		interfaceMngr = GetInterfaceManager();
-		HathiSearchForm.Form = interfaceMngr:CreateForm("Search", "Script");
+		HathiSearchForm.Form = interfaceMngr:CreateForm("Hathi Search", "Script");
 	
 		-- Add a browser
 		HathiSearchForm.Browser = HathiSearchForm.Form:CreateBrowser("Hathi", "Hathi", "Search", "Chromium");
@@ -38,6 +41,7 @@ function Init()
 		HathiSearchForm.RibbonPage = HathiSearchForm.Form:GetRibbonPage("Search");
 		
 		HathiSearchForm.RibbonPage:CreateButton("Search", GetClientImage("Search32"), "Search", "Hathi");
+		HathiSearchForm.RibbonPage:CreateButton("Open New Browser", GetClientImage("Web32"), "OpenInDefaultBrowser", "Utility")
 
 		HathiSearchForm.Form:Show();
 		
@@ -61,4 +65,17 @@ function HathiLoaded()
 	  HathiSearchForm.Browser:ExecuteScript("document.getElementById('field-search-text-input-1-1').value = '" .. GetFieldValue("Transaction", "LoanTitle") .. "'");
    end
 	HathiSearchForm.Browser:ExecuteScript("document.forms['searchcoll'].submit()");
+end
+
+function OpenInDefaultBrowser()
+	local currentUrl = HathiSearchForm.Browser.Address;
+	
+	if (currentUrl and currentUrl ~= "")then
+		LogDebug("Opening Browser URL in default browser: " .. currentUrl);
+
+		local process = Types["Process"]();
+		process.StartInfo.FileName = currentUrl;
+		process.StartInfo.UseShellExecute = true;
+		process:Start();
+	end
 end
