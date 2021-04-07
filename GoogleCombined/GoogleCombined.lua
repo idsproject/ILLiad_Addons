@@ -1,4 +1,4 @@
--- About GoogleCombined.lua (version 2.6, 4/7/2021)
+-- About GoogleCombined.lua (version 2.7, 4/7/2021)
 -- Author:  Mark Sullivan, SUNY Geneseo, IDS Project, sullivm@geneseo.edu
 -- GoogleCombined.lua does a search of Google, Google Books and Google Scholar.  Current URL is in the textbox at the top of the Addon for easy cut & paste.
 -- 
@@ -47,7 +47,7 @@ function Init()
         SearchForm.Google= SearchForm.RibbonPage:CreateButton("Search Google", GetClientImage("Search32"), "GoogleSearch", "Google Combined Search");
         SearchForm.GoogleScholar= SearchForm.RibbonPage:CreateButton("Search Google Scholar", GetClientImage("Search32"), "GoogleScholarSearch", "Google Combined Search");
         SearchForm.GoogleBooks= SearchForm.RibbonPage:CreateButton("Search Google Books", GetClientImage("Search32"), "GoogleBookSearch", "Google Combined Search");
-		SearchForm.RibbonPage:CreateButton("Open New Browser", GetClientImage("Web32"), "OpenInDefaultBrowser", "Utility");
+	SearchForm.RibbonPage:CreateButton("Open New Browser", GetClientImage("Web32"), "OpenInDefaultBrowser", "Utility");
 
         -- Hide buttons for Loan/Article
         if GetFieldValue("Transaction", "RequestType") == "Loan" then
