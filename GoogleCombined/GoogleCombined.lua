@@ -1,4 +1,4 @@
--- About GoogleCombined.lua (version 2.6, 3/29/2021)
+-- About GoogleCombined.lua (version 2.6, 4/7/2021)
 -- Author:  Mark Sullivan, SUNY Geneseo, IDS Project, sullivm@geneseo.edu
 -- GoogleCombined.lua does a search of Google, Google Books and Google Scholar.  Current URL is in the textbox at the top of the Addon for easy cut & paste.
 -- 
@@ -85,17 +85,14 @@ end
 
 
 function GoogleScholarSearch()
-	SearchForm.Browser:RegisterPageHandler("custom", "URLChanged", "URLSet", true);
 	SearchForm.Browser:Navigate("http://scholar.google.com/scholar?q=" .. AtlasHelpers.UrlEncode(settings.SearchText));
 end
 
 function GoogleBookSearch()
-	SearchForm.Browser:RegisterPageHandler("custom", "URLChanged", "URLSet", true);
 	SearchForm.Browser:Navigate("http://books.google.com/books?q=" .. AtlasHelpers.UrlEncode(settings.SearchText));
 end
 
 function GoogleSearch()
-	SearchForm.Browser:RegisterPageHandler("custom", "URLChanged", "URLSet", true);
 	SearchForm.Browser:Navigate("http://google.com/search?q=" .. AtlasHelpers.UrlEncode(settings.SearchText));
 end
 
