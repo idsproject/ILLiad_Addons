@@ -2,7 +2,7 @@
 <Configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>Google Combined</Name>
   <Author>IDS Project</Author>
-  <Version>2.9</Version>
+  <Version>2.91</Version>
   <Active>True</Active>
   <Type>Addon</Type>
   <Description>Search Google Scholar, Google Books and Google. </Description>
@@ -17,7 +17,7 @@
     <Setting name="WhichGoogle" value="Books" type="string">
       <Description>Determines which Google should be searched automatically.  The options at Books, Scholar, and Standard.</Description>
     </Setting>
-    <Setting name="Article" value="true" type="string">
+    <Setting name="Article" value="true" type="boolean">
       <Description>Determines if Scholar should be selected for Articles and Books for books.  Will override WhichGoogle setting if either Books or Scholar is chosen.</Description>
     </Setting>
   </Settings>
