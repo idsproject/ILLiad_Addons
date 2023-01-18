@@ -1,4 +1,4 @@
--- About GoogleCombined.lua (version 2.9, 1/11/2022)
+-- About GoogleCombined.lua (version 3.0, 1/18/2023)
 -- Author:  Mark Sullivan, SUNY Geneseo, IDS Project, sullivm@geneseo.edu
 -- GoogleCombined.lua does a search of Google, Google Books and Google Scholar.  Current URL is in the textbox at the top of the Addon for easy cut & paste.
 -- 
