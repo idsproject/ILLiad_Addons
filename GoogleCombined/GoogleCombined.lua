@@ -31,7 +31,7 @@ function Init()
 		googleSearchForm.URLBox= googleSearchForm.Form:CreateTextEdit("URL:", "URL");
 		
 		-- Add a browser
-		googleSearchForm.Browser = googleSearchForm.Form:CreateBrowser("Google Scholar Search", "Google Scholar Search Browser", "Google Scholar Search");
+		googleSearchForm.Browser = googleSearchForm.Form:CreateBrowser("Google Scholar Search", "Google Scholar Search Browser", "Google Scholar Search","Chromium");
 		
 		-- Hide the text label
 		googleSearchForm.Browser.TextVisible = false;
