@@ -1,0 +1,184 @@
+-- About Discovery.lua
+--
+-- Discovery.lua does a Worldcat Discovery search.  It includes buttons to do searches based on title, isxn or oclc number.
+-- It can also do an automatic search using a search priority string, in which case it will use the first field listed in the string that has a value.
+-- The valid fields are title, isxn and oclc.
+-- autoSearch (boolean) determines whether the search is performed automatically when a request is opened or not.
+
+local settings = {};
+settings.AutoSearch = GetSetting("AutoSearch");
+
+local interfaceMngr = nil;
+local wmsForm = {};
+wmsForm.Form = nil;
+wmsForm.Browser = nil;
+wmsForm.RibbonPage = nil;
+
+require "Atlas.AtlasHelpers";
+
+function Init()
+	interfaceMngr = GetInterfaceManager();
+	
+	-- Create a form
+	wmsForm.Form = interfaceMngr:CreateForm("Discovery Search", "Script");
+
+	-- Add a browser
+	wmsForm.Browser = wmsForm.Form:CreateBrowser("WorldCat Discovery Search", "WorldCat Discovery Search Browser", "Discovery", "Chromium");
+
+	-- Hide the text label
+	wmsForm.Browser.TextVisible = false;
+	
+
+	-- Since we didn't create a ribbon explicitly before creating our browser, it will have created one using the name we passed the CreateBrowser method.  We can retrieve that one and add our buttons to it.
+	wmsForm.RibbonPage = wmsForm.Form:GetRibbonPage("Discovery");
+
+	-- Create the search buttons
+	local button = nil;
+	if	(GetFieldValue("Transaction", "RequestType") == "Article") then
+		button = wmsForm.RibbonPage:CreateButton("Search Article Title", GetClientImage("Search32"), "SearchTitle", "WorldCat Discovery");
+	else
+		button = wmsForm.RibbonPage:CreateButton("Search Loan Title", GetClientImage("Search32"), "SearchTitle", "WorldCat Discovery");
+	end
+	
+	if (CanSearchTitle() ~= true) then
+		button.BarButton.Enabled = false;
+	end
+	
+	button = wmsForm.RibbonPage:CreateButton("Search Journal Title", GetClientImage("Search32"), "SearchJournalTitle", "WorldCat Discovery");
+	if (CanSearchJournalTitle() ~= true) then
+		button.BarButton.Enabled = false;
+	end
+	
+	button = wmsForm.RibbonPage:CreateButton("Search ISXN", GetClientImage("Search32"), "SearchISXN", "WorldCat Discovery");
+	if (CanSearchISXN() ~= true) then
+		button.BarButton.Enabled = false;
+	end
+	
+	button = wmsForm.RibbonPage:CreateButton("Search OCLC", GetClientImage("Search32"), "SearchOCLC", "WorldCat Discovery");
+	if (CanSearchOCLC() ~= true) then
+		button.BarButton.Enabled = false;
+	end
+
+	-- After we add all of our buttons and form elements, we can show the form.
+	wmsForm.Form:Show();
+	
+	if settings.AutoSearch then
+		AutoSearch();
+	end
+end
+-- the CanSearchX functions merely see if the fields in the ILL request have data we can pull from. If not, their corresponding buttons don't appear in our form
+function CanSearchTitle()
+	return GetTitle() ~= "";
+end
+
+function CanSearchJournalTitle()
+	local value = GetFieldValue("Transaction", "PhotoJournalTitle");
+	if (value ~= nil and value ~= "") then 
+		return true;
+	end
+end
+
+function CanSearchOCLC()
+	local value = GetFieldValue("Transaction", "ESPNumber")
+	if (value ~= nil and value ~= "") then
+		return true;
+	end
+	
+	return false;
+end
+
+function CanSearchISXN()
+	local value = GetFieldValue("Transaction", "ISSN")
+	if (value ~= nil and value ~= "") then
+		return true;
+	end
+	
+	return false;
+end
+
+function GetTitle()
+	local title;
+	if	(GetFieldValue("Transaction", "RequestType") == "Article") then
+		title = GetFieldValue("Transaction", "PhotoArticleTitle");
+	else
+		title = GetFieldValue("Transaction", "LoanTitle");
+	end
+	
+	if (title == nil) then
+		title = "";
+	end
+
+	return title;
+end
+
+function AutoSearch()
+	SearchTitle();
+   local priorities = AtlasHelpers.StringSplit(",", GetSetting("SearchPriority"));
+	
+	for index, priority in ipairs(priorities) do
+		local priorityLower = priority:lower();
+		
+		if (priorityLower == "title" and CanSearchTitle()) then
+			SearchTitle();
+			return;
+		elseif (priorityLower == "journaltitle" and CanSearchJournalTitle()) then
+			SearchJournalTitle();
+			return;
+		elseif (priorityLower == "oclc" and CanSearchOCLC()) then
+			SearchOCLC();
+			return;
+		elseif (priorityLower == "isxn" and CanSearchISXN()) then
+			SearchISXN();
+			return;
+		end		
+	end
+	
+	wmsForm.Browser:Navigate(GetSetting("WorldCatURL"));
+	
+end
+
+function SearchTitle()
+	Search("ti:"..GetTitle());
+end
+
+function SearchJournalTitle()
+	local value = GetFieldValue("Transaction", "PhotoJournalTitle");
+	
+	if	(value == nil) then
+		value = "";
+	end
+	
+	Search(value);
+end
+
+function SearchISXN()
+	local value = GetFieldValue("Transaction", "ISSN");
+	
+	if (value == nil) then
+		value = "";
+	end
+	
+	local prefix;
+	
+	if (GetFieldValue("Transaction", "RequestType") == "Article") then
+		prefix = "n2:";
+	else
+		prefix ="bn:";
+	end
+	
+	Search(prefix..value);
+end
+
+function SearchOCLC()
+	local value = GetFieldValue("Transaction", "ESPNumber");
+	
+	if	(value == nil) then
+		value = "";
+	end
+	
+	Search(value);
+end
+
+function Search(searchTerm) --actually performs our search
+	wmsForm.Browser:Navigate(GetSetting("WorldCatURL").."/search?databaseList=&queryString="..AtlasHelpers.UrlEncode(searchTerm));
+end
