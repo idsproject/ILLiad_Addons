@@ -23,7 +23,11 @@ function Init()
 	wmsForm.Form = interfaceMngr:CreateForm("Discovery Search", "Script");
 
 	-- Add a browser
-	wmsForm.Browser = wmsForm.Form:CreateBrowser("WorldCat Discovery Search", "WorldCat Discovery Search Browser", "Discovery", "Chromium");
+	if (WebView2Enabled()) then
+		wmsForm.Browser = wmsForm.Form:CreateBrowser("WorldCat Discovery Search", "WorldCat Discovery Search Browser", "Discovery", "WebView2");
+	else
+		wmsForm.Browser = wmsForm.Form:CreateBrowser("WorldCat Discovery Search", "WorldCat Discovery Search Browser", "Discovery", "Chromium");
+	end
 
 	-- Hide the text label
 	wmsForm.Browser.TextVisible = false;
@@ -181,4 +185,8 @@ end
 
 function Search(searchTerm) --actually performs our search
 	wmsForm.Browser:Navigate(GetSetting("WorldCatURL").."/search?databaseList=&queryString="..AtlasHelpers.UrlEncode(searchTerm));
+end
+
+function WebView2Enabled()
+    return AddonInfo.Browsers ~= nil and AddonInfo.Browsers.WebView2 ~= nil and AddonInfo.Browsers.WebView2 == true;
 end
