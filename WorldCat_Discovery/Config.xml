@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<Name>Worldcat Discovery Search(Chromium)</Name>
+	<Author>Andy Huff(Original version), IDS Project(Chromium Update)</Author>
+	<Version>1.0</Version>
+	<Active>True</Active>
+	<Type>Addon</Type>
+	<Description>Performs a Worldcat Discovery search using a requests title, journal title, isxn or oclc number.</Description>
+	<Forms>
+		<Form>FormRequest</Form>
+	</Forms>
+	<Settings>
+		<Setting name="AutoSearch" value="true" type="boolean">
+			<Description>Defines whether the search should be automatically performed when the form opens.</Description>
+		</Setting>
+		<Setting name="WorldCatURL" value="" type="string">
+			<Description>The URL for WorldCat Discovery. Do not include a trailing slash. ex: uofl.on.worldcat.org</Description>
+		</Setting>
+		<Setting name="SearchPriority" value="Title,JournalTitle,ISXN,OCLC" type="string">
+			<Description>Defines what order priority should be used when attempting to find a field to search by when using the auto search feature. Allowed fields are title, journaltitle, isxn, and oclc.</Description>
+		</Setting>
+	</Settings>
+	<Files>
+		<File>Discovery.lua</File>
+	</Files>
+</Configuration>
