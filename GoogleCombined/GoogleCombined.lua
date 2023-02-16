@@ -1,9 +1,9 @@
--- About GoogleCombined.lua (version 3.0, 1/18/2023)
+-- About GoogleCombined.lua (version 3.1, 2/16/2023)
 -- Author:  Mark Sullivan, SUNY Geneseo, IDS Project, sullivm@geneseo.edu
 -- GoogleCombined.lua does a search of Google, Google Books and Google Scholar.  Current URL is in the textbox at the top of the Addon for easy cut & paste.
 -- 
 -- autoSearch (boolean) determines whether the search is performed automatically when a request is opened or not.
--- New version uses Chromium for better stability
+-- New version uses Chromium and Webview2
 
 -- Load the .NET System Assembly
 luanet.load_assembly("System");
@@ -22,7 +22,7 @@ googleSearchForm.RibbonPage = nil;
 require "Atlas.AtlasHelpers";
 
 function Init()
-	if GetFieldValue("Transaction", "RequestType") == "Article" then
+
 		interfaceMngr = GetInterfaceManager();
 		
 		-- Create a form
@@ -31,7 +31,12 @@ function Init()
 		googleSearchForm.URLBox= googleSearchForm.Form:CreateTextEdit("URL:", "URL");
 		
 		-- Add a browser
-		googleSearchForm.Browser = googleSearchForm.Form:CreateBrowser("Google Scholar Search", "Google Scholar Search Browser", "Google Scholar Search","Chromium");
+		if (WebView2Enabled()) then
+			googleSearchForm.Browser = googleSearchForm.Form:CreateBrowser("Google Scholar Search", "Google Scholar Search Browser", "Google Scholar Search","WebView2");
+		else
+			googleSearchForm.Browser = googleSearchForm.Form:CreateBrowser("Google Scholar Search", "Google Scholar Search Browser", "Google Scholar Search","Chromium");
+		end
+		
 		
 		-- Hide the text label
 		googleSearchForm.Browser.TextVisible = false;
@@ -74,7 +79,7 @@ function Init()
 			end
 		end
 	end
-end
+
 
 function GoogleScholarSearch()
 	googleSearchForm.Browser:Navigate("http://scholar.google.com/scholar?q=" .. AtlasHelpers.UrlEncode(settings.SearchText));	
@@ -89,6 +94,10 @@ end
 function GoogleSearch()
 	googleSearchForm.Browser:Navigate("http://www.google.com/search?q=" .. AtlasHelpers.UrlEncode(settings.SearchText));	
 	googleSearchForm.URLBox.Value="http://google.com/search?q=" .. AtlasHelpers.UrlEncode(settings.SearchText);
+end
+
+function WebView2Enabled()
+    return AddonInfo.Browsers ~= nil and AddonInfo.Browsers.WebView2 ~= nil and AddonInfo.Browsers.WebView2 == true;
 end
 
 function OpenInDefaultBrowser()
