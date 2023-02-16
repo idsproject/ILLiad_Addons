@@ -1,4 +1,4 @@
--- About GoogleCombined.lua (version 3.1, 2/16/2023)
+-- About GoogleCombined.lua (version 3.0, 1/18/2023)
 -- Author:  Mark Sullivan, SUNY Geneseo, IDS Project, sullivm@geneseo.edu
 -- GoogleCombined.lua does a search of Google, Google Books and Google Scholar.  Current URL is in the textbox at the top of the Addon for easy cut & paste.
 -- 
@@ -13,6 +13,7 @@ Types["Process"] = luanet.import_type("System.Diagnostics.Process");
 local settings = {};
 settings.AutoSearch = GetSetting("AutoSearch");
 settings.SearchText = '';
+settings.Article = GetSetting("Article");
 local interfaceMngr = nil;
 local googleSearchForm = {};
 googleSearchForm.Form = nil;
@@ -60,21 +61,21 @@ function Init()
         end
         -- Search when opened if autoSearch is true
 		if settings.AutoSearch then
-			if settings.Article == false then
-				if settings.WhichGoogle=="Books" then
-					GoogleBookSearch();
-				elseif settings.WhichGoogle=="Scholar" then
-					GoogleScholarSearch();
-				else
-					GoogleSearch();
-				end
-			else
+			if settings.Article then
 				if settings.WhichGoogle=="Standard" then
 					GoogleSearch();
 				elseif GetFieldValue("Transaction", "RequestType") == "Loan" then
 					GoogleBookSearch();
 				else
 					GoogleScholarSearch();
+				end
+			else
+				if settings.WhichGoogle=="Books" then
+					GoogleBookSearch();
+				elseif settings.WhichGoogle=="Scholar" then
+					GoogleScholarSearch();
+				else
+					GoogleSearch();
 				end
 			end
 		end
