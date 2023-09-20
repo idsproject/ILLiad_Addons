@@ -2,10 +2,10 @@
 <Configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>Hathi Trust Catalog</Name>
   <Author>IDS Project</Author>
-  <Version>2.1</Version>
-  <Active>True</Active>
+  <Version>2.5</Version>
+  <Active>False</Active>
   <Type>Addon</Type>
-  <Description>This Addon does an ISBN or Title search.  ISBN will be run if one is available. Uses Chromium.</Description>
+  <Description>This Addon does an ISBN or Title search.  ISBN will be run if one is available. Uses Chromium or WebView2.</Description>
   <Forms>
     <Form>FormRequest</Form>
   </Forms>
