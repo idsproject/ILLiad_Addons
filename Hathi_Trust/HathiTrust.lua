@@ -1,6 +1,6 @@
 -- About HathitTrust.lua
--- IDS Project 2021
--- Uses Chromium
+-- IDS Project 2023
+-- Uses Chromium or WebView2
 --
 -- This Addon does an ISBN or Title search using Hathi Trust (http://www.hathitrust.org).
 -- ISBN will be run if one is available.
@@ -32,7 +32,11 @@ function Init()
 		HathiSearchForm.Form = interfaceMngr:CreateForm("Hathi Search", "Script");
 	
 		-- Add a browser
-		HathiSearchForm.Browser = HathiSearchForm.Form:CreateBrowser("Hathi", "Hathi", "Search", "Chromium");
+		if (WebView2Enabled()) then
+			HathiSearchForm.Browser = HathiSearchForm.Form:CreateBrowser("Hathi", "Hathi", "Search", "WebView2");
+		else
+			HathiSearchForm.Browser = HathiSearchForm.Form:CreateBrowser("Hathi", "Hathi", "Search", "Chromium");
+		end
 	
 		-- Hide the text label
 		HathiSearchForm.Browser.TextVisible = false;
@@ -52,19 +56,18 @@ function Init()
 end
 
 function Search()
-	HathiSearchForm.Browser:RegisterPageHandler("formExists", "searchcoll", "HathiLoaded", false);
-	HathiSearchForm.Browser:Navigate("https://babel.hathitrust.org/cgi/ls?a=page;page=advanced");	
+		
+   if GetFieldValue("Transaction", "ISSN") ~= "" then
+	  HathiSearchForm.Browser:Navigate("https://catalog.hathitrust.org/Search/Home?type%5B%5D=isn&lookfor%5B%5D=" .. GetFieldValue("Transaction", "ISSN") .. "&page=1&pagesize=100");
+   else 
+      HathiSearchForm.Browser:Navigate("https://catalog.hathitrust.org/Search/Home?adv=1&setft=true&lookfor%5B%5D=" .. GetFieldValue("Transaction", "LoanTitle") .. "&lookfor%5B%5D=" .. GetFieldValue("Transaction", "LoanAuthor") .. "&type%5B%5D=title&type%5B%5D=author&bool%5B%5D=AND");
+   end
+   
 end
 
-function HathiLoaded()
-   if GetFieldValue("Transaction", "ISSN") ~= "" then
-	  HathiSearchForm.Browser:ExecuteScript("document.getElementById('field1').value = 'isn'");
-	  HathiSearchForm.Browser:ExecuteScript("document.getElementById('field-search-text-input-1-1').value = '" .. GetFieldValue("Transaction", "ISSN") .. "'");
-   else 
-      HathiSearchForm.Browser:ExecuteScript("document.getElementById('field1').value = 'title'");
-	  HathiSearchForm.Browser:ExecuteScript("document.getElementById('field-search-text-input-1-1').value = '" .. GetFieldValue("Transaction", "LoanTitle") .. "'");
-   end
-	HathiSearchForm.Browser:ExecuteScript("document.forms['searchcoll'].submit()");
+
+function WebView2Enabled()
+    return AddonInfo.Browsers ~= nil and AddonInfo.Browsers.WebView2 ~= nil and AddonInfo.Browsers.WebView2 == true;
 end
 
 function OpenInDefaultBrowser()
