@@ -1,0 +1,26 @@
+<Configuration>
+<Name>Hathi Trust Link Import</Name>
+<Author>IDS Project/Mark Sullivan</Author>
+<Version>1.17</Version>
+<Active>true</Active>
+<Type>Server</Type>
+<Description>
+
+</Description>
+<Settings>
+<Setting name='TransactionStatus' value='Awaiting OCR Processing' type='string'>
+<Description>
+Transaction Status that Addon will scan for Hathi Updates
+</Description>
+</Setting>
+<Setting name='FieldChoice' value='CallNumber' type='string'>
+<Description>
+Field that addon will place Hathi Trust URL into if a possible item is found.
+</Description>
+</Setting>
+</Settings>
+  <Forms />
+  <Files>
+    <File>Code.lua</File>
+  </Files>
+</Configuration>
