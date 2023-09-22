@@ -1,7 +1,7 @@
 <Configuration>
 <Name>Hathi Trust Link Import</Name>
 <Author>IDS Project/Mark Sullivan</Author>
-<Version>1.17</Version>
+<Version>1.18</Version>
 <Active>true</Active>
 <Type>Server</Type>
 <Description>
