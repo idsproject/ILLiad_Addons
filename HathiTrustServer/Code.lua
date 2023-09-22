@@ -34,13 +34,8 @@ function ImportURL()
 	myStream = myWebClient:OpenRead(url);
 	sr = StreamReader(myStream);
 	hathi_data = sr:ReadToEnd();
-	--LogDebug("***********************");
-	--LogDebug(hathi_data);
-	--LogDebug("***********************");
 	myStream:Close();
-	if string.find(hathi_data, "No results") then
-		return;
-	else
+	if not string.find(hathi_data, "No results") then
 		SetFieldValue("Transaction", settings.FieldChoice, url);
 		SaveDataSource("Transaction");
 	end
@@ -54,10 +49,14 @@ local success, errorMessage = pcall(func);
 if(not success) then
 return;
 end
-
+DBCONN:Dispose();
+DBCONN = nil;
 end
 
 function OnError(errorArgs)
+LogDebug("*** Closing DB connection ***");
+DBCONN:Dispose();
+DBCONN = nil;
 LogDebug("***********************");
 LogDebug("*** HATHI_TRUST_ERROR ***");
 LogDebug("***********************");
