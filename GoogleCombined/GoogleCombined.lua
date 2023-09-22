@@ -1,4 +1,4 @@
--- About GoogleCombined.lua (version 3.0, 1/18/2023)
+-- About GoogleCombined.lua (version 3.2, 9/22/2023)
 -- Author:  Mark Sullivan, SUNY Geneseo, IDS Project, sullivm@geneseo.edu
 -- GoogleCombined.lua does a search of Google, Google Books and Google Scholar.  Current URL is in the textbox at the top of the Addon for easy cut & paste.
 -- 
@@ -14,6 +14,7 @@ local settings = {};
 settings.AutoSearch = GetSetting("AutoSearch");
 settings.SearchText = '';
 settings.Article = GetSetting("Article");
+settings.WhichGoogle = GetSetting("WhichGoogle");
 local interfaceMngr = nil;
 local googleSearchForm = {};
 googleSearchForm.Form = nil;
