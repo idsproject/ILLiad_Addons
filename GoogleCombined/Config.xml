@@ -2,7 +2,7 @@
 <Configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>Google Combined</Name>
   <Author>IDS Project</Author>
-  <Version>3.1</Version>
+  <Version>3.2</Version>
   <Active>True</Active>
   <Type>Addon</Type>
   <Description>Search Google Scholar, Google Books and Google. </Description>
