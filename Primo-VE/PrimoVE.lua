@@ -1,12 +1,14 @@
 -- About PrimoVE.lua
 --
--- Updated for Primo VE by Mark Sullivan, IDS Project, Mark@idsproject.org
+-- Updated Primo VE for WebView2 by Mark Sullivan, IDS Project, sullivm@geneseo.edu
+-- 10/31/2023
 -- PrimoVE.lua provides a basic search for ISBN, ISSN, Title, and Phrase Searching for the Primo VE interface.
 -- There is a config file that is associated with this Addon that needs to be set up in order for the Addon to work.
 -- Please see the ReadMe.txt file for example configuration values that you can pull from your Primo New UI URL.
 --
 -- set AutoSearchISxN to true if you would like the Addon to automatically search for the ISxN.
 -- set AutoSearchTitle to true if you would like the Addon to automatically search for the Title.
+
 
 require "Atlas.AtlasHelpers";
 
@@ -44,7 +46,12 @@ function Init()
 
 		-- Create browser
 		PrimoVEForm.Form = interfaceMngr:CreateForm("PrimoVE", "Script");
-		PrimoVEForm.Browser = PrimoVEForm.Form:CreateBrowser("PrimoVE", "PrimoVE", "PrimoVE", "Chromium");
+		if (WebView2Enabled()) then
+			PrimoVEForm.Browser = PrimoVEForm.Form:CreateBrowser("PrimoVE", "PrimoVE", "PrimoVE", "WebView2");
+		else
+			PrimoVEForm.Browser = PrimoVEForm.Form:CreateBrowser("PrimoVE", "PrimoVE", "PrimoVE", "Chromium");
+		end
+		
 		AliasForm.Form = interfaceMngr:CreateForm("ALIAS", "Script");
 		AliasForm.Alias = AliasForm.Form:CreateBrowser("ALIAS", "ALIAS Browser", "ALIAS");
 
@@ -64,13 +71,12 @@ function Init()
 		PrimoVEForm.RibbonPage:CreateButton("Search ISxN", GetClientImage("Search32"), "SearchISxN", "PrimoVE");
 		PrimoVEForm.RibbonPage:CreateButton("Search OCLC#", GetClientImage("Search32"), "SearchOCLC", "PrimoVE");
 		PrimoVEForm.RibbonPage:CreateButton("Search Title", GetClientImage("Search32"), "SearchTitle", "PrimoVE");
-		PrimoVEForm.RibbonPage:CreateButton("Import Call Number/Location", GetClientImage("Search32"), "ImportCallNumber", "PrimoVE");
+		PrimoVEForm.RibbonPage:CreateButton("Import Call Number/Location/Barcode", GetClientImage("Search32"), "ImportCallNumber", "PrimoVE");
 		PrimoVEForm.RibbonPage:CreateButton("ALIAS License Check", GetClientImage("Search32"), "ProcessArticle", "PrimoVE");
 		PrimoVEForm.RibbonPage:CreateButton("Open New Browser", GetClientImage("Web32"), "OpenInDefaultBrowser", "Utility");
 
 		PrimoVEForm.Form:Show();
-    
-		
+				
 		if settings.AutoSearchISxN then
 			SearchISxN();
 		elseif settings.AutoSearchOCLC then
@@ -90,7 +96,13 @@ end
 -- This function searches for ISxN for both Loan and Article requests.
 function SearchISxN()
     if GetFieldValue("Transaction", "ISSN") ~= "" then
-		PrimoVEForm.Browser:Navigate(settings.BaseVEURL .. "/discovery/search?query=any,contains," .. GetFieldValue("Transaction", "ISSN") .. "&tab=default_tab&search_scope=" .. settings.SearchScope .. "&sortby=rank&vid=" .. settings.DatabaseName .. "&lang=en_US&offset=0");
+		local ISXN = GetFieldValue("Transaction", "ISSN");
+		i, j = string.find(ISXN, " ");
+		if i>0 then
+			t=split(ISXN," ");
+			ISXN=t[1];
+		end
+		PrimoVEForm.Browser:Navigate(settings.BaseVEURL .. "/discovery/search?query=any,contains," .. ISXN .. "&tab=default_tab&search_scope=" .. settings.SearchScope .. "&sortby=rank&vid=" .. settings.DatabaseName .. "&lang=en_US&offset=0");
 	else
 		SearchTitle();
 	end
@@ -114,7 +126,6 @@ function SearchTitle()
 		if settings.WhichTitle then
 			local articleTitle=GetFieldValue("Transaction", "PhotoArticleTitle");
 			articleTitle=string.gsub(articleTitle,"'","");
-			articleTitle=AtlasHelpers.UrlEncode("Cartilage biology in osteoarthritis--lessons from developmental biology");
 			PrimoVEForm.Browser:Navigate(settings.BaseVEURL .. "/discovery/search?query=any,contains,'" .. articleTitle .. "'&tab=default_tab&search_scope=" .. settings.SearchScope .. "&sortby=rank&vid=" .. settings.DatabaseName .. "&lang=en_US&offset=0");
 		else
 			PrimoVEForm.Browser:Navigate(settings.BaseVEURL .. "/discovery/search?query=any,contains," .. GetFieldValue("Transaction", "PhotoJournalTitle") .. "&tab=default_tab&search_scope=" .. settings.SearchScope .. "&sortby=rank&vid=" .. settings.DatabaseName .. "&lang=en_US&offset=0");
@@ -125,13 +136,16 @@ function SearchTitle()
 end
 
 function ImportCallNumber()
+	local clicker = PrimoVEForm.Browser:EvaluateScript("document.getElementsByClassName('neutralized-button layout-full-width layout-display-flex md-button md-ink-ripple layout-row')[0].click()").Result;
 	local tags = PrimoVEForm.Browser:EvaluateScript("document.getElementsByTagName('prm-location-items')[0].innerHTML").Result;
-	if (tags == nil) then
+	if (tags == nil or tags=='') then
 		interfaceMngr:ShowMessage("Open a full record with local items available.", "Record with physical holdings required");
+		return;
 	end
   
 	local location_name = tags:match('collectionTranslation">(.-)<'):gsub('collectionTranslation">', '');
 	local call_number = tags:match('callNumber" dir="auto">(.-)<'):gsub('callNumber" dir="auto">', '');
+	
   
 	if (location_name == nil or call_number == nil) then
 		interfaceMngr:ShowMessage("Location or call number not found on this page.", "Information not found");
@@ -140,27 +154,40 @@ function ImportCallNumber()
 		SetFieldValue("Transaction", "Location", location_name);
 		SetFieldValue("Transaction", "CallNumber", call_number);
 	end
-	ImportBarcode()
-	ExecuteCommand("SwitchTab", {"Detail"});
+	Sleep(1);
+	if BarcodeCheck() then
+		ImportBarcode();
+	end
+	--ExecuteCommand("SwitchTab", {"Detail"});
+end
+
+function BarcodeCheck()
+	--interfaceMngr:ShowMessage("Check", "Test");
+	local tags = PrimoVEForm.Browser:EvaluateScript("document.getElementsByTagName('prm-location-items')[0].innerHTML").Result;
+	local barcode = tags:match('Barcode: (.-)<');
+	--interfaceMngr:ShowMessage(barcode, "Test");
+	if (barcode == nil) then
+		local clicker = PrimoVEForm.Browser:EvaluateScript("document.getElementsByClassName('md-2-line has-expand md-no-proxy md-with-secondary _md')[0].click()").Result;
+		Sleep(1);
+		return true;
+	else 
+		return true;
+	end
 end
 
 
-
 function ImportBarcode()
-  local tags = PrimoVEForm.Browser:EvaluateScript("document.getElementsByTagName('prm-location-items')[0].innerHTML").Result;
-  local barcode = nil
-  if (tags ~= nil) then
-	barcode = tags:match('<p>Barcode: (.-)<');
-	if (barcode == nil) then
-		local clicker = PrimoVEForm.Browser:EvaluateScript("document.getElementsByClassName('md-icon-button header-action expand-collapse-button md-button md-primoExplore-theme md-ink-ripple')[0].click()").Result;
-		tags = PrimoVEForm.Browser:EvaluateScript("document.getElementsByTagName('prm-location-items')[0].innerHTML").Result;
-		
-		barcode = tags:match('<p>Barcode: (.-)<'):gsub('<p>Barcode: ', '');
-	else
-		barcode = tags:match('<p>Barcode: (.-)<'):gsub('<p>Barcode: ', '');
+	
+	local tags = PrimoVEForm.Browser:EvaluateScript("document.getElementsByTagName('prm-location-items')[0].innerHTML").Result;
+	local barcode = nil
+	if (tags ~= nil) then
+		barcode = tags:match('Barcode: (.-)<');
+		if (barcode == nil) then
+			interfaceMngr:ShowMessage("Click on item in list to view barcode.", "Record with physical holdings required");
+		else
+			barcode = tags:match('Barcode: (.-)<'):gsub('Barcode: ', '');
+		end
 	end
-  end
-	barcode = string.gsub(barcode, "[^%w]", "");
 	if (settings.BarcodeLocation ~= nil and barcode ~= nil) then
 		SetFieldValue("Transaction", settings.BarcodeLocation, barcode);
 	end
@@ -279,4 +306,14 @@ function OpenInDefaultBrowser()
 		process.StartInfo.UseShellExecute = true;
 		process:Start();
 	end
+end
+
+function WebView2Enabled()
+    return AddonInfo.Browsers ~= nil and AddonInfo.Browsers.WebView2 ~= nil and AddonInfo.Browsers.WebView2 == true;
+end
+
+function Sleep(seconds)
+    local endTime = os.time() + seconds
+    while os.time() < endTime do
+    end
 end
