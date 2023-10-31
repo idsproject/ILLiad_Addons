@@ -19,3 +19,9 @@ DatabaseName:
 
 01DCOLL_INST:01DCOLL
 01SUNY_GEN:01SUNY_GEN
+
+Search Scope:
+The default for Primo VE is MyInstituion but this can be changed. Please check your Primo VE web link or with your systems admin for what your options are.
+
+BarcodeLocation:
+The Primo VE addon will import the first barcode in the list and place it into this field. If there are multiple items in the list, click on the one you want and close all of the others before clicking on Import Call Number/Location/Barcode.
