@@ -2,10 +2,10 @@
 <Configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>Primo VE</Name>
   <Author>IDS Project</Author>
-  <Version>2.0</Version>
+  <Version>2.2</Version>
   <Active>True</Active>
   <Type>Addon</Type>
-  <Description>Performs an Title, ISBN, and ISSN Search in the Primo VE interface.  Updated for Chromium.</Description>
+  <Description>Performs an Title, ISBN, and ISSN Search in the Primo VE interface.  Updated for WebView2.</Description>
   <Forms>
     <Form>FormRequest</Form>
   </Forms>
@@ -35,7 +35,7 @@
     <Setting name="DatabaseName" value="" type="string">
       <Description>Defines the Database Name of your Primo VE URL. See the ReadMe for an example.</Description>
     </Setting>
-	<Setting name="BarcodeLocation" value="ReferenceNumber" type="string">
+    <Setting name="BarcodeLocation" value="ReferenceNumber" type="string">
       <Description>Defines the location for the Barcode. Example: ReferenceNumber.</Description>
     </Setting>
   </Settings>
