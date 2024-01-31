@@ -1,1 +1,30 @@
-
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>GOBI</Name>
+  <Author>IDS Project, updated for Chromium by Andrew Morgan</Author>
+  <Version>2.1</Version>
+  <Active>True</Active>
+  <Type>Addon</Type>
+  <Description>GOBI</Description>
+  <Forms>
+    <Form>FormRequest</Form>
+  </Forms>
+  <Permissions />
+  <Settings>
+    <Setting name="AutoSearch" value="true" type="boolean">
+      <Description>Determines whether or not the search should be done automatically when the request is opened.</Description>
+    </Setting>
+    <Setting name="Email" value="" type="string">
+      <Description>GOBI Email Address</Description>
+    </Setting>
+    <Setting name="Password" value="" type="string">
+      <Description>GOBI Password.</Description>
+    </Setting>
+    <Setting name="PriceField" value="MaxCost" type="string">
+      <Description>ILLiad field to store the GOBI price.</Description>
+    </Setting>
+  </Settings>
+  <Files>
+    <File>GOBI.lua</File>
+  </Files>
+</Configuration>
