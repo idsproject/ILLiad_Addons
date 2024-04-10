@@ -1,7 +1,7 @@
 -- About PrimoVE.lua
 --
 -- Updated Primo VE for WebView2 by Mark Sullivan, IDS Project, sullivm@geneseo.edu
--- 10/31/2023
+-- 4/10/2024
 -- PrimoVE.lua provides a basic search for ISBN, ISSN, Title, and Phrase Searching for the Primo VE interface.
 -- There is a config file that is associated with this Addon that needs to be set up in order for the Addon to work.
 -- Please see the ReadMe.txt file for example configuration values that you can pull from your Primo New UI URL.
@@ -98,9 +98,11 @@ function SearchISxN()
     if GetFieldValue("Transaction", "ISSN") ~= "" then
 		local ISXN = GetFieldValue("Transaction", "ISSN");
 		i, j = string.find(ISXN, " ");
-		if i>0 then
-			t=split(ISXN," ");
-			ISXN=t[1];
+		if i ~= nil then
+			if i>0 then
+				t=split(ISXN," ");
+				ISXN=t[1];
+			end
 		end
 		PrimoVEForm.Browser:Navigate(settings.BaseVEURL .. "/discovery/search?query=any,contains," .. ISXN .. "&tab=default_tab&search_scope=" .. settings.SearchScope .. "&sortby=rank&vid=" .. settings.DatabaseName .. "&lang=en_US&offset=0");
 	else
