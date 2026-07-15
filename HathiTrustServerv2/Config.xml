@@ -1,0 +1,57 @@
+<Configuration>
+<Name>Hathi Trust Server Addon</Name>
+<Author>IDS Network/Mark Sullivan</Author>
+<Version>0.09</Version>
+<Active>true</Active>
+<Type>Server</Type>
+<Description>
+
+</Description>
+
+<Settings>
+<Setting name='NVTGC' value='ILL' type='string'>
+<Description>
+Please enter ALL, ILL, or a specific NVTGC
+</Description>
+</Setting>
+<Setting name='RequestType' value='Article' type='string'>
+<Description>
+Please enter Article, Loan, or Both
+</Description>
+</Setting>
+<Setting name='BorDocDelTransactionStatus' value='TEST-TEST' type='string'>
+<Description>
+Transaction Status that Addon will scan for Hathi Updates (use either Borrowing or Doc Del status)
+</Description>
+</Setting>
+<Setting name='LendingTransactionStatus' value='TEST-TEST' type='string'>
+<Description>
+Transaction Status that Addon will scan for Hathi Updates
+</Description>
+</Setting>
+<Setting name='FieldChoice' value='CallNumber' type='string'>
+<Description>
+Field that addon will place Hathi Trust URL into if a possible item is found.
+</Description>
+</Setting>
+<Setting name='RouteToBorDocDel' value='Awaiting Hathi Trust Review' type='string'>
+<Description>
+Status in Borrowing or Doc Del that addon will route to if Hathi has materials requested.
+</Description>
+</Setting>
+<Setting name='RouteToLending' value='Awaiting Hathi Trust Review' type='string'>
+<Description>
+Status in Lending that addon will route to if Hathi has materials requested.
+</Description>
+</Setting>
+<Setting name='FlagThis' value='Awaiting Hathi Trust Review' type='string'>
+<Description>
+Flag that addon will assign if Hathi has materials requested.
+</Description>
+</Setting>
+</Settings>
+  <Forms />
+  <Files>
+    <File>Code.lua</File>
+  </Files>
+</Configuration>
